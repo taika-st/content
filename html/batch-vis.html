@@ -86,20 +86,69 @@
                     </div>
 
                     <div className="bg-white rounded-lg shadow-lg p-6">
-                        <h2 className="text-2xl font-bold mb-6">What's Happening Here?</h2>
+                        <h2 className="text-2xl font-bold mb-6">Parallel Processing with Tensor Cores</h2>
                         <div className="space-y-4">
-                            <p>1. We start with text that gets converted to numbers</p>
-                            <p>2. We create 4 batches (batch_size = 4) where each batch:</p>
-                            <ul className="list-disc pl-6">
-                                <li>Contains 8 numbers (block_size = 8)</li>
-                                <li>Starts from a different position in our encoded text</li>
-                            </ul>
-                            <p>3. For each batch:</p>
-                            <ul className="list-disc pl-6">
-                                <li>Input (X) is a sequence of 8 numbers</li>
-                                <li>Target (Y) is the same sequence shifted one position forward</li>
-                            </ul>
-                            <p>Think of it like this: Given a sequence of numbers, can you predict the next number?</p>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="p-4 bg-gray-100 rounded">
+                                    <h3 className="font-bold mb-2">CPU Processing (Sequential)</h3>
+                                    <div className="space-y-2">
+                                        <div className="p-2 bg-blue-200 rounded">Batch 1 processing...</div>
+                                        <div className="p-2 bg-blue-200 rounded">↓</div>
+                                        <div className="p-2 bg-blue-200 rounded">Batch 2 processing...</div>
+                                        <div className="p-2 bg-blue-200 rounded">↓</div>
+                                        <div className="p-2 bg-blue-200 rounded">Batch 3 processing...</div>
+                                        <div className="p-2 bg-blue-200 rounded">↓</div>
+                                        <div className="p-2 bg-blue-200 rounded">Batch 4 processing...</div>
+                                    </div>
+                                </div>
+                                <div className="p-4 bg-gray-100 rounded">
+                                    <h3 className="font-bold mb-2">GPU Tensor Cores (Parallel)</h3>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <div className="p-2 bg-green-200 rounded">Batch 1</div>
+                                        <div className="p-2 bg-green-200 rounded">Batch 2</div>
+                                        <div className="p-2 bg-green-200 rounded">Batch 3</div>
+                                        <div className="p-2 bg-green-200 rounded">Batch 4</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div className="mt-6 space-y-4">
+                                <h3 className="text-lg font-semibold">Processing Speed Analogy:</h3>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="p-4 bg-yellow-50 rounded">
+                                        <h4 className="font-bold">CPU (15A/110V Circuit)</h4>
+                                        <p>~1.65 kW charging rate</p>
+                                        <div className="w-full bg-gray-200 rounded-full h-4 mt-2">
+                                            <div className="bg-yellow-400 rounded-full h-4" style={{width: '10%'}}></div>
+                                        </div>
+                                    </div>
+                                    <div className="p-4 bg-green-50 rounded">
+                                        <h4 className="font-bold">GPU Tensor Cores (DC Fast Charging)</h4>
+                                        <p>50-350 kW charging rate</p>
+                                        <div className="w-full bg-gray-200 rounded-full h-4 mt-2">
+                                            <div className="bg-green-400 rounded-full h-4" style={{width: '90%'}}></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-white rounded-lg shadow-lg p-6">
+                        <h2 className="text-2xl font-bold mb-6">Key Insights</h2>
+                        <div className="space-y-4">
+                            <div className="p-4 bg-blue-50 rounded">
+                                <h3 className="font-bold">Sequential Nature</h3>
+                                <p>While we have 32 training examples (4 batches × 8 block_size), the transformer maintains their sequential relationships through attention masks and positional encoding.</p>
+                            </div>
+                            <div className="p-4 bg-green-50 rounded">
+                                <h3 className="font-bold">Parallel Processing</h3>
+                                <p>Tensor cores can process multiple batches simultaneously, making training significantly faster than sequential CPU processing.</p>
+                            </div>
+                            <div className="p-4 bg-yellow-50 rounded">
+                                <h3 className="font-bold">Attention Mechanism</h3>
+                                <p>Each position in a sequence can only attend to previous positions within its own batch, preserving the sequential learning nature while allowing parallel processing.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
