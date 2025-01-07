@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Batch Processing Visualization</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const App = () => {
+            // Sample text data to work with
+            const sampleText = "Hi there! How are you?";
+            const encodedText = [7, 8, 0, 20, 7, 4, 17, 4, 1, 0, 7, 15, 22, 0, 0, 25, 15, 21, 26];
+            
+            // Simulating batch creation with block_size = 8
+            const blockSize = 8;
+            const batchSize = 4;
+            
+            // Create sample batches
+            const sampleBatches = [
+                encodedText.slice(0, blockSize),
+                encodedText.slice(2, blockSize + 2),
+                encodedText.slice(4, blockSize + 4),
+                encodedText.slice(6, blockSize + 6)
+            ];
+
+            const targetBatches = [
+                encodedText.slice(1, blockSize + 1),
+                encodedText.slice(3, blockSize + 3),
+                encodedText.slice(5, blockSize + 4),
+                encodedText.slice(7, blockSize + 7)
+            ];
+
+            return (
+                <div className="p-8 max-w-4xl mx-auto space-y-8">
+                    <div className="bg-white rounded-lg shadow-lg p-6">
+                        <h2 className="text-2xl font-bold mb-6">Understanding Batches and Blocks</h2>
+                        
+                        <div className="space-y-6">
+                            <div>
+                                <h3 className="text-lg font-semibold mb-2">Original Text:</h3>
+                                <div className="p-4 bg-blue-100 rounded">{sampleText}</div>
+                            </div>
+                            
+                            <div>
+                                <h3 className="text-lg font-semibold mb-2">Encoded as Numbers:</h3>
+                                <div className="p-4 bg-green-100 rounded flex flex-wrap gap-2">
+                                    {encodedText.map((num, idx) => (
+                                        <span key={idx} className="px-2 py-1 bg-white rounded shadow">{num}</span>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div>
+                                <h3 className="text-lg font-semibold mb-2">Batches (Input X):</h3>
+                                {sampleBatches.map((batch, idx) => (
+                                    <div key={idx} className="p-4 bg-yellow-100 rounded mb-4">
+                                        <span className="font-bold mr-2">Batch {idx + 1}:</span>
+                                        <div className="flex gap-2 mt-2">
+                                            {batch.map((num, i) => (
+                                                <span key={i} className="px-2 py-1 bg-white rounded shadow">{num}</span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div>
+                                <h3 className="text-lg font-semibold mb-2">Targets (Y):</h3>
+                                {targetBatches.map((batch, idx) => (
+                                    <div key={idx} className="p-4 bg-red-100 rounded mb-4">
+                                        <span className="font-bold mr-2">Target {idx + 1}:</span>
+                                        <div className="flex gap-2 mt-2">
+                                            {batch.map((num, i) => (
+                                                <span key={i} className="px-2 py-1 bg-white rounded shadow">{num}</span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-white rounded-lg shadow-lg p-6">
+                        <h2 className="text-2xl font-bold mb-6">What's Happening Here?</h2>
+                        <div className="space-y-4">
+                            <p>1. We start with text that gets converted to numbers</p>
+                            <p>2. We create 4 batches (batch_size = 4) where each batch:</p>
+                            <ul className="list-disc pl-6">
+                                <li>Contains 8 numbers (block_size = 8)</li>
+                                <li>Starts from a different position in our encoded text</li>
+                            </ul>
+                            <p>3. For each batch:</p>
+                            <ul className="list-disc pl-6">
+                                <li>Input (X) is a sequence of 8 numbers</li>
+                                <li>Target (Y) is the same sequence shifted one position forward</li>
+                            </ul>
+                            <p>Think of it like this: Given a sequence of numbers, can you predict the next number?</p>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
