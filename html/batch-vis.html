@@ -135,6 +135,25 @@
                     </div>
 
                     <div className="bg-white rounded-lg shadow-lg p-6">
+                        <h2 className="text-2xl font-bold mb-6">What's Happening Here?</h2>
+                        <div className="space-y-4">
+                            <p>1. We start with text that gets converted to numbers</p>
+                            <p>2. We create 4 batches (batch_size = 4) where each batch:</p>
+                            <ul className="list-disc pl-6">
+                                <li>Contains 8 numbers (block_size = 8)</li>
+                                <li>Starts from a different position in our encoded text</li>
+                            </ul>
+                            <p>3. For each batch:</p>
+                            <ul className="list-disc pl-6">
+                                <li>Input (X) is a sequence of 8 numbers</li>
+                                <li>Target (Y) is the same sequence shifted one position forward</li>
+                            </ul>
+                            <p>Think of it like this: Given a sequence of numbers, can you predict the next number?</p>
+                        </div>
+                    </div>
+                </div>
+
+                    <div className="bg-white rounded-lg shadow-lg p-6">
                         <h2 className="text-2xl font-bold mb-6">Key Insights</h2>
                         <div className="space-y-4">
                             <div className="p-4 bg-blue-50 rounded">
