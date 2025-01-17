@@ -153,4 +153,10 @@ input[type="text"].editor-headline {
 .tl-timeline .tl-timenav-slider .tl-timeaxis {
   font-weight: normal;
 }
+/* Add our specific color override for the timeline markers */
+.tl-timemarker .tl-timemarker-content-container .tl-timemarker-content .tl-timemarker-text h2.tl-headline,
+.tl-timemarker .tl-timemarker-content-container .tl-timemarker-content .tl-timemarker-text h2.tl-headline p {
+    color: black !important;
+}
+
 
