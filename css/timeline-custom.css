@@ -1,7 +1,10 @@
-/*	Font Abril Fatface & Droid Sans
+/*	Font Default
+----------------------------------------------------- */
+/*	Font PT Sans & PT Serif & PT Sans Narrow
 
-https://www.google.com/fonts/specimen/Abril+Fatface
-https://www.google.com/fonts/specimen/Droid+Sans
+http://www.google.com/webfonts/specimen/PT+Sans+Narrow
+http://www.google.com/webfonts/specimen/PT+Sans
+http://www.google.com/webfonts/specimen/PT+Serif
 ----------------------------------------------------- */
 /*	VARIABLES
 	BASE
@@ -21,27 +24,33 @@ https://www.google.com/fonts/specimen/Droid+Sans
 /* GFX
 ================================================== */
 @font-face {
-  font-family: 'Abril Fatface';
+  font-family: 'PT Sans';
   font-style: normal;
   font-weight: 400;
-  src: url(https://fonts.gstatic.com/s/abrilfatface/v23/zOL64pLDlL1D99S8g8PtiKchq-dmiA.ttf) format('truetype');
+  src: url(https://fonts.gstatic.com/s/ptsans/v17/jizaRExUiTo99u79D0KEwA.ttf) format('truetype');
 }
 @font-face {
-  font-family: 'Droid Sans';
-  font-style: normal;
-  font-weight: 400;
-  src: url(https://fonts.gstatic.com/s/droidsans/v18/SlGVmQWMvZQIdix7AFxXkHNSaA.ttf) format('truetype');
-}
-@font-face {
-  font-family: 'Droid Sans';
+  font-family: 'PT Sans Narrow';
   font-style: normal;
   font-weight: 700;
-  src: url(https://fonts.gstatic.com/s/droidsans/v18/SlGWmQWMvZQIdix7AFxXmMh3eDs1Yg.ttf) format('truetype');
+  src: url(https://fonts.gstatic.com/s/ptsansnarrow/v18/BngSUXNadjH0qYEzV7ab-oWlsbg95AiFW_g.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'PT Serif';
+  font-style: italic;
+  font-weight: 400;
+  src: url(https://fonts.gstatic.com/s/ptserif/v18/EJRTQgYoZZY2vCFuvAFT_r21dw.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'PT Serif';
+  font-style: normal;
+  font-weight: 400;
+  src: url(https://fonts.gstatic.com/s/ptserif/v18/EJRVQgYoZZY2vCFuvAFWzro.ttf) format('truetype');
 }
 /*	Font Base
 ----------------------------------------------------- */
 .tl-timeline {
-  font-family: 'Droid Sans', sans-serif;
+  font-family: 'PT Serif', serif;
   font-weight: 400;
   font-size: 16px;
   line-height: 1.3em;
@@ -52,8 +61,8 @@ https://www.google.com/fonts/specimen/Droid+Sans
 .tl-timeline h4,
 .tl-timeline h5,
 .tl-timeline h6 {
-  font-family: 'Abril Fatface', cursive;
-  text-transform: none;
+  font-family: 'PT Sans Narrow', sans-serif;
+  text-transform: uppercase;
   font-weight: 700;
   font-size: 46px;
   line-height: 46px;
@@ -63,36 +72,36 @@ https://www.google.com/fonts/specimen/Droid+Sans
   line-height: 58px;
 }
 .tl-timeline p {
-  font-family: 'Droid Sans', sans-serif;
+  font-family: 'PT Serif', serif;
   font-size: 16px;
   line-height: 1.3em;
 }
 .tl-timeline ul {
-  font-family: 'Droid Sans', sans-serif;
+  font-family: 'PT Serif', serif;
 }
 .tl-timeline .tl-media .tl-media-wikipedia h4 a,
 .tl-timeline .tl-media h4,
 .tl-timeline .tl-media h4 a {
-  font-family: 'Droid Sans', sans-serif;
+  font-family: 'PT Serif', serif;
   font-weight: 700;
   font-size: 24px;
   line-height: 24px;
 }
 .tl-timeline .tl-caption,
 .tl-timeline .tl-credit {
-  font-family: 'Droid Sans', sans-serif;
+  font-family: 'PT Serif', serif;
 }
 .tl-timeline .vcard {
-  font-family: 'Droid Sans', sans-serif !important;
+  font-family: 'PT Sans Narrow', sans-serif !important;
   font-weight: normal !important;
 }
 .tl-timeline .tl-slidenav-next,
 .tl-timeline .tl-slidenav-previous,
 .tl-timeline .tl-message,
 .tl-timeline .tl-timegroup-message {
-  font-family: 'Droid Sans', sans-serif;
+  font-family: 'PT Sans Narrow', sans-serif;
   font-weight: 700;
-  text-transform: none;
+  text-transform: uppercase;
 }
 .tl-timeline .tl-slidenav-next .tl-slidenav-title,
 .tl-timeline .tl-slidenav-previous .tl-slidenav-title,
@@ -102,54 +111,46 @@ https://www.google.com/fonts/specimen/Droid+Sans
 }
 .tl-timeline .tl-headline-date,
 .tl-timeline h3.tl-headline-date {
-  font-family: 'Droid Sans', sans-serif !important;
+  font-family: 'PT Sans Narrow', sans-serif !important;
   font-weight: normal !important;
-  text-transform: none !important;
+  text-transform: uppercase !important;
 }
 .tl-timeline .tl-headline-date small,
 .tl-timeline h3.tl-headline-date small {
   font-weight: normal !important;
 }
 .tl-timeline .tl-timenav-slider {
-  font-family: 'Droid Sans', sans-serif;
+  font-family: 'PT Sans Narrow', sans-serif;
   font-weight: 700;
 }
 .tl-timeline .tl-timenav-slider h2.tl-headline {
-  font-family: 'Droid Sans', sans-serif;
+  font-family: 'PT Sans', sans-serif;
   font-weight: 700;
   text-transform: none;
 }
 .tl-timeline .tl-timenav-slider .tl-timeaxis {
-  font-family: 'Droid Sans', sans-serif;
+  font-family: 'PT Sans Narrow', sans-serif;
   font-weight: 700;
-  text-transform: none;
+  text-transform: uppercase;
 }
 .tl-timeline .tl-menubar {
-  font-family: 'Droid Sans', sans-serif;
+  font-family: 'PT Sans Narrow', sans-serif;
 }
 .tl-timeline blockquote,
 .tl-timeline blockquote p {
-  font-family: 'Droid Sans', sans-serif;
-  font-style: normal;
+  font-family: 'PT Serif', serif;
+  font-style: italic;
   font-weight: 400;
   line-height: 1.3;
 }
-/* Add our specific color override for the timeline markers */
-.tl-timemarker .tl-timemarker-content-container .tl-timemarker-content .tl-timemarker-text h2.tl-headline,
-.tl-timemarker .tl-timemarker-content-container .tl-timemarker-content .tl-timemarker-text h2.tl-headline p {
-    color: black !important;
-}
-/* Keep the color black even on hover and active states
-.tl-timemarker:hover .tl-timemarker-content-container .tl-timemarker-content .tl-timemarker-text h2.tl-headline,
-.tl-timemarker:hover .tl-timemarker-content-container .tl-timemarker-content .tl-timemarker-text h2.tl-headline p,
-.tl-timemarker.tl-timemarker-active .tl-timemarker-content-container .tl-timemarker-content .tl-timemarker-text h2.tl-headline,
-.tl-timemarker.tl-timemarker-active .tl-timemarker-content-container .tl-timemarker-content .tl-timemarker-text h2.tl-headline p {
-    color: black !important;
-} */
 input[type="text"].editor-headline {
-  font-family: 'Abril Fatface', cursive;
-  text-transform: none;
+  font-family: 'PT Sans Narrow', sans-serif;
+  text-transform: uppercase;
   font-weight: 700;
   font-size: 46px;
   line-height: 46px;
 }
+.tl-timeline .tl-timenav-slider .tl-timeaxis {
+  font-weight: normal;
+}
+
