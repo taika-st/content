@@ -1,0 +1,962 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>
+            Google Cloud Identity Platform - Network Architecture Flow
+        </title>
+        <!-- Include React and ReactDOM -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+
+        <!-- Include Babel for JSX -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.18.13/babel.min.js"></script>
+
+        <!-- Tailwind CSS -->
+        <script src="https://cdn.tailwindcss.com"></script>
+
+        <style>
+            body {
+                font-family:
+                    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                    Helvetica, Arial, sans-serif;
+                margin: 0;
+                padding: 20px;
+                background-color: #f0f2f5;
+            }
+
+            .app-container {
+                max-width: 1200px;
+                margin: 0 auto;
+                background-color: white;
+                border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                padding: 20px;
+            }
+
+            @keyframes pulse {
+                0% {
+                    transform: scale(0.8);
+                    opacity: 0.8;
+                }
+                50% {
+                    transform: scale(1.2);
+                    opacity: 1;
+                }
+                100% {
+                    transform: scale(0.8);
+                    opacity: 0.8;
+                }
+            }
+
+            .animate-pulse {
+                animation: pulse 2s infinite;
+            }
+
+            /* Fix for the SVG strokes */
+            .stroke-blue-600 {
+                stroke: #2563eb;
+            }
+
+            .stroke-gray-200 {
+                stroke: #e5e7eb;
+            }
+
+            .stroke-gray-400 {
+                stroke: #9ca3af;
+            }
+
+            .stroke-[6px] {
+                stroke-width: 6px;
+            }
+
+            .stroke-[1px] {
+                stroke-width: 1px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="root"></div>
+
+        <script type="text/babel">
+            const { useState } = React;
+
+            // Define simple SVG components for icons
+            const IconComponents = {
+                ArrowRight: (props) => (
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width={props.size || 24}
+                        height={props.size || 24}
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className={props.className}
+                    >
+                        <path d="M5 12h14"></path>
+                        <path d="m12 5 7 7-7 7"></path>
+                    </svg>
+                ),
+                Globe: (props) => (
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width={props.size || 24}
+                        height={props.size || 24}
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className={props.className}
+                    >
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+                        <path d="M2 12h20"></path>
+                    </svg>
+                ),
+                Lock: (props) => (
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width={props.size || 24}
+                        height={props.size || 24}
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className={props.className}
+                    >
+                        <rect
+                            x="3"
+                            y="11"
+                            width="18"
+                            height="11"
+                            rx="2"
+                            ry="2"
+                        ></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                ),
+                Server: (props) => (
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width={props.size || 24}
+                        height={props.size || 24}
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className={props.className}
+                    >
+                        <rect
+                            x="2"
+                            y="2"
+                            width="20"
+                            height="8"
+                            rx="2"
+                            ry="2"
+                        ></rect>
+                        <rect
+                            x="2"
+                            y="14"
+                            width="20"
+                            height="8"
+                            rx="2"
+                            ry="2"
+                        ></rect>
+                        <line x1="6" y1="6" x2="6" y2="6"></line>
+                        <line x1="6" y1="18" x2="6" y2="18"></line>
+                    </svg>
+                ),
+                Shield: (props) => (
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width={props.size || 24}
+                        height={props.size || 24}
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className={props.className}
+                    >
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    </svg>
+                ),
+                Check: (props) => (
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width={props.size || 24}
+                        height={props.size || 24}
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className={props.className}
+                    >
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                    </svg>
+                ),
+            };
+
+            const { ArrowRight, Globe, Lock, Server, Shield, Check } =
+                IconComponents;
+
+            const NetworkArchitectureVisualizer = () => {
+                const [currentStep, setCurrentStep] = useState(0);
+                const [showDetails, setShowDetails] = useState(false);
+
+                const networkSteps = [
+                    {
+                        title: "Initial Access",
+                        description:
+                            "User navigates to your Cloud Run service URL (https://your-service-name.run.app)",
+                        details:
+                            "The browser makes an HTTPS request to Google Cloud's infrastructure which routes to your Cloud Run container. Your Express server responds by sending the index.html file which includes the Firebase/Identity Platform JavaScript SDK.",
+                        connections: [
+                            {
+                                from: "user",
+                                to: "cloudRun",
+                                active: true,
+                                label: "HTTPS GET request",
+                            },
+                        ],
+                    },
+                    {
+                        title: "Login Button Click",
+                        description:
+                            "User clicks the 'Login with Google' button on your app's UI",
+                        details:
+                            "This triggers the Firebase Auth SDK's signInWithPopup() method in the browser. No backend request is made yet - this is all client-side JavaScript execution.",
+                        connections: [
+                            {
+                                from: "user",
+                                to: "cloudRun",
+                                active: false,
+                                completed: true,
+                            },
+                            {
+                                from: "user",
+                                to: "firebase",
+                                active: true,
+                                label: "Prepares auth request",
+                            },
+                        ],
+                    },
+                    {
+                        title: "Google OAuth Request",
+                        description:
+                            "Firebase Auth SDK redirects to Google's OAuth consent screen",
+                        details:
+                            "The browser is redirected to accounts.google.com where the user will enter their Google credentials. This connection is between the user's browser and Google's authentication servers, not your backend.",
+                        connections: [
+                            {
+                                from: "user",
+                                to: "cloudRun",
+                                active: false,
+                                completed: true,
+                            },
+                            {
+                                from: "user",
+                                to: "firebase",
+                                active: false,
+                                completed: true,
+                            },
+                            {
+                                from: "user",
+                                to: "google",
+                                active: true,
+                                label: "OAuth request",
+                            },
+                        ],
+                    },
+                    {
+                        title: "User Authenticates with Google",
+                        description:
+                            "User enters their Google credentials and grants permissions",
+                        details:
+                            "The user enters their email and password on Google's site and approves the requested permissions. Google validates the credentials on their servers.",
+                        connections: [
+                            {
+                                from: "user",
+                                to: "cloudRun",
+                                active: false,
+                                completed: true,
+                            },
+                            {
+                                from: "user",
+                                to: "firebase",
+                                active: false,
+                                completed: true,
+                            },
+                            {
+                                from: "user",
+                                to: "google",
+                                active: true,
+                                label: "User credentials",
+                            },
+                        ],
+                    },
+                    {
+                        title: "Google OAuth Callback",
+                        description:
+                            "Google redirects back to your app with an authorization code",
+                        details:
+                            "After successful authentication, Google redirects the browser back to your app's domain with an authorization code. This redirect goes to the Firebase Auth callback URL (handled by the Firebase SDK), not directly to your server.",
+                        connections: [
+                            {
+                                from: "user",
+                                to: "cloudRun",
+                                active: false,
+                                completed: true,
+                            },
+                            {
+                                from: "google",
+                                to: "user",
+                                active: true,
+                                label: "Redirect with auth code",
+                            },
+                            {
+                                from: "user",
+                                to: "firebase",
+                                active: false,
+                                completed: false,
+                            },
+                        ],
+                    },
+                    {
+                        title: "Token Exchange",
+                        description:
+                            "Firebase Auth SDK exchanges the code for ID and access tokens",
+                        details:
+                            "The Firebase Auth SDK in the browser takes the authorization code and exchanges it with Google Identity Platform for a Firebase ID token, refresh token, and access token. This happens automatically in the background.",
+                        connections: [
+                            {
+                                from: "user",
+                                to: "cloudRun",
+                                active: false,
+                                completed: true,
+                            },
+                            {
+                                from: "user",
+                                to: "firebase",
+                                active: true,
+                                label: "Code exchange",
+                            },
+                            {
+                                from: "firebase",
+                                to: "google",
+                                active: true,
+                                label: "Verify & issue tokens",
+                            },
+                        ],
+                    },
+                    {
+                        title: "Authentication Complete",
+                        description:
+                            "Firebase Auth updates the authentication state in the browser",
+                        details:
+                            "The Firebase Auth SDK stores the tokens securely in the browser and triggers the onAuthStateChanged listener, which updates your app's UI to show the logged-in state.",
+                        connections: [
+                            {
+                                from: "user",
+                                to: "cloudRun",
+                                active: false,
+                                completed: true,
+                            },
+                            {
+                                from: "user",
+                                to: "firebase",
+                                active: false,
+                                completed: true,
+                            },
+                            {
+                                from: "firebase",
+                                to: "user",
+                                active: true,
+                                label: "Auth state update",
+                            },
+                        ],
+                    },
+                    {
+                        title: "Protected API Request",
+                        description:
+                            "User requests protected data from your Cloud Run backend",
+                        details:
+                            "When the user clicks 'Fetch Protected Data', your app requests the current ID token from Firebase Auth and includes it in the Authorization header of the request to your backend.",
+                        connections: [
+                            {
+                                from: "user",
+                                to: "firebase",
+                                active: true,
+                                label: "Get ID token",
+                            },
+                            {
+                                from: "firebase",
+                                to: "user",
+                                active: true,
+                                label: "Returns token",
+                            },
+                            {
+                                from: "user",
+                                to: "cloudRun",
+                                active: true,
+                                label: "API request with token",
+                            },
+                        ],
+                    },
+                    {
+                        title: "Backend Token Verification",
+                        description:
+                            "Your Cloud Run backend verifies the ID token",
+                        details:
+                            "Your Express server extracts the token from the Authorization header and uses the Firebase Admin SDK to verify it. The Admin SDK communicates with Google's token verification endpoints.",
+                        connections: [
+                            {
+                                from: "user",
+                                to: "cloudRun",
+                                active: false,
+                                completed: true,
+                            },
+                            {
+                                from: "cloudRun",
+                                to: "firebase",
+                                active: true,
+                                label: "Verify token",
+                            },
+                            {
+                                from: "firebase",
+                                to: "cloudRun",
+                                active: true,
+                                label: "Token valid",
+                            },
+                        ],
+                    },
+                    {
+                        title: "Protected Data Response",
+                        description:
+                            "Your backend returns the protected data to the user",
+                        details:
+                            "After successful verification, your Express server processes the request, retrieves the requested data, and sends it back to the browser where it's displayed to the user.",
+                        connections: [
+                            {
+                                from: "user",
+                                to: "cloudRun",
+                                active: false,
+                                completed: true,
+                            },
+                            {
+                                from: "cloudRun",
+                                to: "user",
+                                active: true,
+                                label: "Protected data",
+                            },
+                        ],
+                    },
+                ];
+
+                const handleNextStep = () => {
+                    if (currentStep < networkSteps.length - 1) {
+                        setCurrentStep(currentStep + 1);
+                    } else {
+                        // Reset to beginning
+                        setCurrentStep(0);
+                    }
+                };
+
+                const handlePrevStep = () => {
+                    if (currentStep > 0) {
+                        setCurrentStep(currentStep - 1);
+                    }
+                };
+
+                // Function to determine the position of component nodes
+                const getNodePosition = (node) => {
+                    switch (node) {
+                        case "user":
+                            return { top: 120, left: 100 }; // Absolute pixel values
+                        case "cloudRun":
+                            return { top: 120, left: 700 };
+                        case "firebase":
+                            return { top: 350, left: 400 };
+                        case "google":
+                            return { top: 350, left: 700 };
+                        default:
+                            return { top: 0, left: 0 };
+                    }
+                };
+
+                // FIXED: Function to create SVG paths for connections using absolute pixel values
+                const createPath = (from, to, active, completed = false) => {
+                    const fromPos = getNodePosition(from);
+                    const toPos = getNodePosition(to);
+
+                    // Calculate control points for curve - fixed to use absolute values
+                    const midX = (fromPos.left + toPos.left) / 2;
+                    const midY = Math.min(fromPos.top, toPos.top) - 50; // Pull the curve up
+
+                    // Create path using absolute coordinates
+                    const path = `M ${fromPos.left} ${fromPos.top} Q ${midX} ${midY}, ${toPos.left} ${toPos.top}`;
+
+                    // Make active connections much more prominent
+                    let strokeColor = active
+                        ? "stroke-blue-600"
+                        : completed
+                          ? "stroke-gray-400"
+                          : "stroke-gray-200";
+                    let strokeWidth = active ? "stroke-[6px]" : "stroke-[1px]";
+
+                    return {
+                        path,
+                        strokeColor,
+                        strokeWidth,
+                        active,
+                    };
+                };
+
+                return (
+                    <div className="flex flex-col h-full bg-gray-50 p-4 rounded-lg shadow">
+                        <h1 className="text-2xl font-bold text-center mb-6">
+                            Cloud Identity Platform - Network Architecture Flow
+                        </h1>
+
+                        {/* Progress indicator */}
+                        <div className="w-full bg-gray-200 rounded-full h-2.5 mb-6">
+                            <div
+                                className="bg-blue-600 h-2.5 rounded-full transition-all duration-500"
+                                style={{
+                                    width: `${((currentStep + 1) / networkSteps.length) * 100}%`,
+                                }}
+                            ></div>
+                        </div>
+
+                        {/* Network architecture visualization - fixed height and overflow hidden to prevent blue dot issue */}
+                        <div className="relative w-full h-[450px] bg-white rounded-lg shadow mb-6 overflow-hidden">
+                            {/* Component nodes */}
+                            <div
+                                className="absolute"
+                                style={{
+                                    top: getNodePosition("user").top - 40,
+                                    left: getNodePosition("user").left - 40,
+                                }}
+                            >
+                                <div className="w-20 h-20 bg-blue-100 rounded-lg flex items-center justify-center mb-2 shadow-md z-10">
+                                    <div className="text-center">
+                                        <Globe
+                                            size={28}
+                                            className="text-blue-600 mx-auto mb-1"
+                                        />
+                                        <span className="text-sm font-medium">
+                                            User Browser
+                                        </span>
+                                    </div>
+                                </div>
+                                <div className="text-xs text-gray-500">
+                                    User's Network
+                                </div>
+                            </div>
+                            <div
+                                className="absolute"
+                                style={{
+                                    top: getNodePosition("cloudRun").top - 40,
+                                    left: getNodePosition("cloudRun").left - 40,
+                                }}
+                            >
+                                <div className="w-20 h-20 bg-blue-100 rounded-lg flex items-center justify-center mb-2 shadow-md z-10">
+                                    <div className="text-center">
+                                        <Server
+                                            size={28}
+                                            className="text-blue-600 mx-auto mb-1"
+                                        />
+                                        <span className="text-sm font-medium">
+                                            Cloud Run
+                                        </span>
+                                    </div>
+                                </div>
+                                <div className="text-xs text-gray-500">
+                                    Your Backend
+                                </div>
+                            </div>
+                            <div
+                                className="absolute"
+                                style={{
+                                    top: getNodePosition("firebase").top - 40,
+                                    left: getNodePosition("firebase").left - 40,
+                                }}
+                            >
+                                <div className="w-20 h-20 bg-yellow-100 rounded-lg flex items-center justify-center mb-2 shadow-md z-10">
+                                    <div className="text-center">
+                                        <Shield
+                                            size={28}
+                                            className="text-yellow-600 mx-auto mb-1"
+                                        />
+                                        <span className="text-sm font-medium">
+                                            Identity Platform
+                                        </span>
+                                    </div>
+                                </div>
+                                <div className="text-xs text-gray-500">
+                                    Firebase Auth
+                                </div>
+                            </div>
+                            <div
+                                className="absolute"
+                                style={{
+                                    top: getNodePosition("google").top - 40,
+                                    left: getNodePosition("google").left - 40,
+                                }}
+                            >
+                                <div className="w-20 h-20 bg-green-100 rounded-lg flex items-center justify-center mb-2 shadow-md z-10">
+                                    <div className="text-center">
+                                        <Lock
+                                            size={28}
+                                            className="text-green-600 mx-auto mb-1"
+                                        />
+                                        <span className="text-sm font-medium">
+                                            Google Auth
+                                        </span>
+                                    </div>
+                                </div>
+                                <div className="text-xs text-gray-500">
+                                    accounts.google.com
+                                </div>
+                            </div>
+                            {/* Connection paths - fixed to render SVG paths correctly */}
+                            <svg
+                                width="800"
+                                height="450"
+                                viewBox="0 0 800 450"
+                                style={{
+                                    position: "absolute",
+                                    top: 0,
+                                    left: 0,
+                                }}
+                            >
+                                {networkSteps[currentStep].connections.map(
+                                    (connection, index) => {
+                                        const {
+                                            path,
+                                            strokeColor,
+                                            strokeWidth,
+                                            active,
+                                        } = createPath(
+                                            connection.from,
+                                            connection.to,
+                                            connection.active,
+                                            connection.completed,
+                                        );
+
+                                        // Create a parallel path for the text that's slightly offset
+                                        const textPathOffset = 24; // Adjust this value to control the distance
+
+                                        return (
+                                            <g key={index}>
+                                                <path
+                                                    d={path}
+                                                    fill="none"
+                                                    className={`${strokeColor} ${strokeWidth}`}
+                                                    strokeDasharray={
+                                                        active ? "0" : "5,5"
+                                                    }
+                                                    style={{
+                                                        strokeWidth: active
+                                                            ? "6px"
+                                                            : "1px",
+                                                        stroke: active
+                                                            ? "#2563eb"
+                                                            : connection.completed
+                                                              ? "#9ca3af"
+                                                              : "#e5e7eb",
+                                                    }}
+                                                />
+
+                                                {/* Connection label */}
+                                                {connection.label && (
+                                                    <text>
+                                                        <textPath
+                                                            href={`#textPath${index}`}
+                                                            startOffset="50%"
+                                                            style={{
+                                                                textAnchor:
+                                                                    "middle",
+                                                                fill: active
+                                                                    ? "#1d4ed8"
+                                                                    : "#6b7280",
+                                                                fontWeight:
+                                                                    active
+                                                                        ? "bold"
+                                                                        : "normal",
+                                                                fontSize: active
+                                                                    ? "16px"
+                                                                    : "12px",
+                                                                dominantBaseline:
+                                                                    "hanging", // Positions text below the path
+                                                            }}
+                                                        >
+                                                            {connection.label}
+                                                        </textPath>
+                                                    </text>
+                                                )}
+
+                                                {/* Hidden path for text - with a vertical offset */}
+                                                <path
+                                                    id={`textPath${index}`}
+                                                    d={path}
+                                                    fill="none"
+                                                    stroke="none"
+                                                    transform={`translate(0, ${textPathOffset})`}
+                                                />
+
+                                                {/* Animated circles and arrow markers for active connections */}
+                                                {active && (
+                                                    <>
+                                                        {/* Multiple animated data packets */}
+                                                        <circle
+                                                            r="8"
+                                                            fill="#3b82f6"
+                                                            className="animate-pulse"
+                                                        >
+                                                            <animateMotion
+                                                                dur="3s"
+                                                                repeatCount="indefinite"
+                                                                path={path}
+                                                            />
+                                                        </circle>
+
+                                                        <circle
+                                                            r="8"
+                                                            fill="#3b82f6"
+                                                            className="animate-pulse"
+                                                        >
+                                                            <animateMotion
+                                                                dur="3s"
+                                                                begin="1s"
+                                                                repeatCount="indefinite"
+                                                                path={path}
+                                                            />
+                                                        </circle>
+
+                                                        {/* Arrow marker at end of path */}
+                                                        <marker
+                                                            id={`arrowhead-${index}`}
+                                                            markerWidth="15"
+                                                            markerHeight="10"
+                                                            refX="0"
+                                                            refY="5"
+                                                            orient="auto"
+                                                        >
+                                                            <polygon
+                                                                points="0 0, 15 5, 0 10"
+                                                                fill="#2563eb"
+                                                            />
+                                                        </marker>
+                                                        <path
+                                                            d={path}
+                                                            fill="none"
+                                                            stroke="none"
+                                                            markerEnd={`url(#arrowhead-${index})`}
+                                                        />
+                                                    </>
+                                                )}
+                                            </g>
+                                        );
+                                    },
+                                )}
+                            </svg>
+                            {/* Domain indicators - actual network domains */}
+                            <div className="absolute top-2 left-2 text-xs text-gray-500">
+                                User's Browser (Local Network)
+                            </div>
+                            <div className="absolute top-2 right-2 text-xs text-gray-500">
+                                your-service.run.app
+                            </div>
+                            <div className="absolute bottom-2 left-1/3 text-xs text-gray-500">
+                                identitytoolkit.googleapis.com
+                            </div>
+                            <div className="absolute bottom-2 right-2 text-xs text-gray-500">
+                                accounts.google.com
+                            </div>
+                        </div>
+
+                        {/* Step details */}
+                        <div className="bg-white rounded-lg shadow p-6 mb-6">
+                            <div className="flex items-center justify-between mb-4">
+                                <div className="flex items-center">
+                                    <div className="bg-blue-100 rounded-full w-8 h-8 flex items-center justify-center mr-3">
+                                        <span className="text-blue-600 font-semibold">
+                                            {currentStep + 1}
+                                        </span>
+                                    </div>
+                                    <h2 className="text-xl font-bold">
+                                        {networkSteps[currentStep].title}
+                                    </h2>
+                                </div>
+                            </div>
+
+                            <p className="mb-4 text-gray-700">
+                                {networkSteps[currentStep].description}
+                            </p>
+
+                            <div className="mt-4 bg-blue-50 p-4 rounded border border-blue-200">
+                                <div className="flex items-center mb-2">
+                                    <h3 className="font-semibold">
+                                        Technical Details:
+                                    </h3>
+                                    <button
+                                        onClick={() =>
+                                            setShowDetails(!showDetails)
+                                        }
+                                        className="ml-2 text-blue-600 text-sm underline"
+                                    >
+                                        {showDetails ? "Hide" : "Show"}
+                                    </button>
+                                </div>
+                                {showDetails && (
+                                    <p className="text-gray-700">
+                                        {networkSteps[currentStep].details}
+                                    </p>
+                                )}
+                            </div>
+
+                            {/* Network info for current step */}
+                            <div className="mt-6 bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
+                                <h3 className="font-semibold mb-2 text-blue-700">
+                                    Active Network Connections:
+                                </h3>
+                                {networkSteps[currentStep].connections.filter(
+                                    (conn) => conn.active,
+                                ).length > 0 ? (
+                                    <div className="space-y-2">
+                                        {networkSteps[currentStep].connections
+                                            .filter((conn) => conn.active)
+                                            .map((connection, idx) => {
+                                                const fromLabel =
+                                                    connection.from === "user"
+                                                        ? "User Browser"
+                                                        : connection.from ===
+                                                            "cloudRun"
+                                                          ? "Cloud Run Service"
+                                                          : connection.from ===
+                                                              "firebase"
+                                                            ? "Identity Platform"
+                                                            : "Google Auth";
+
+                                                const toLabel =
+                                                    connection.to === "user"
+                                                        ? "User Browser"
+                                                        : connection.to ===
+                                                            "cloudRun"
+                                                          ? "Cloud Run Service"
+                                                          : connection.to ===
+                                                              "firebase"
+                                                            ? "Identity Platform"
+                                                            : "Google Auth";
+
+                                                return (
+                                                    <div
+                                                        key={idx}
+                                                        className="bg-white p-3 rounded-md shadow-sm"
+                                                    >
+                                                        <div className="flex items-center">
+                                                            <span className="font-medium text-blue-800">
+                                                                {fromLabel}
+                                                            </span>
+                                                            <ArrowRight
+                                                                size={20}
+                                                                className="text-blue-500 mx-2"
+                                                            />
+                                                            <span className="font-medium text-blue-800">
+                                                                {toLabel}
+                                                            </span>
+                                                        </div>
+                                                        <p className="text-blue-600 mt-1">
+                                                            {connection.label}
+                                                        </p>
+                                                    </div>
+                                                );
+                                            })}
+                                    </div>
+                                ) : (
+                                    <p className="text-gray-600 italic">
+                                        No active network connections at this
+                                        step.
+                                    </p>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Navigation buttons */}
+                        <div className="flex justify-between">
+                            <button
+                                onClick={handlePrevStep}
+                                disabled={currentStep === 0}
+                                className={`px-4 py-2 rounded ${currentStep === 0 ? "bg-gray-200 text-gray-500 cursor-not-allowed" : "bg-blue-100 text-blue-700 hover:bg-blue-200"}`}
+                            >
+                                Previous Step
+                            </button>
+
+                            <button
+                                onClick={handleNextStep}
+                                className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
+                            >
+                                {currentStep === networkSteps.length - 1
+                                    ? "Restart Flow"
+                                    : "Next Step"}
+                            </button>
+                        </div>
+
+                        {/* Key domain reference */}
+                        <div className="mt-6 bg-gray-100 p-3 rounded-md">
+                            <h3 className="font-semibold mb-2">
+                                Network Domains Reference:
+                            </h3>
+                            <ul className="text-sm space-y-1">
+                                <li>
+                                    <span className="font-medium">
+                                        your-service.run.app
+                                    </span>
+                                    : Your Cloud Run service domain
+                                </li>
+                                <li>
+                                    <span className="font-medium">
+                                        identitytoolkit.googleapis.com
+                                    </span>
+                                    : Firebase/Identity Platform authentication
+                                    endpoints
+                                </li>
+                                <li>
+                                    <span className="font-medium">
+                                        accounts.google.com
+                                    </span>
+                                    : Google's authentication service
+                                </li>
+                                <li>
+                                    <span className="font-medium">
+                                        securetoken.googleapis.com
+                                    </span>
+                                    : Used for token verification (not shown in
+                                    diagram)
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                );
+            };
+
+            // Render the component
+            const root = ReactDOM.createRoot(document.getElementById("root"));
+            root.render(<NetworkArchitectureVisualizer />);
+        </script>
+    </body>
+</html>
