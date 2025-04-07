@@ -259,7 +259,7 @@
                         description:
                             "Firebase Auth SDK redirects to Google's OAuth consent screen",
                         details:
-                            "The browser is redirected to accounts.google.com where the user will enter their Google credentials. This connection is between the user's browser and Google's authentication servers, not your backend.",
+                            "The browser is redirected to accounts.google.com where the user will enter their Google credentials. This connection is between the user's browser and Google's authentication servers, notyour backend.",
                         connections: [
                             {
                                 from: "user",
@@ -487,11 +487,11 @@
                         case "user":
                             return { top: 120, left: 100 }; // Absolute pixel values
                         case "cloudRun":
-                            return { top: 120, left: 700 };
+                            return { top: 120, left: 800 };
                         case "firebase":
-                            return { top: 350, left: 400 };
+                            return { top: 350, left: 500 };
                         case "google":
-                            return { top: 350, left: 700 };
+                            return { top: 350, left: 800 };
                         default:
                             return { top: 0, left: 0 };
                     }
@@ -584,8 +584,10 @@
                                         </span>
                                     </div>
                                 </div>
-                                <div className="text-xs text-gray-500">
+                                <div className="flex items-center justify-center text-xs text-gray-500">
                                     Your Backend
+                                    <br />
+                                    (your-service.run.app)
                                 </div>
                             </div>
                             <div
@@ -608,6 +610,8 @@
                                 </div>
                                 <div className="text-xs text-gray-500">
                                     Firebase Auth
+                                    <br />
+                                    (identitytoolkit.googleapis.com)
                                 </div>
                             </div>
                             <div
@@ -636,7 +640,7 @@
                             <svg
                                 width="800"
                                 height="450"
-                                viewBox="0 0 800 450"
+                                viewBox="0 0 850 450"
                                 style={{
                                     position: "absolute",
                                     top: 0,
@@ -774,19 +778,6 @@
                                     },
                                 )}
                             </svg>
-                            {/* Domain indicators - actual network domains */}
-                            <div className="absolute top-2 left-2 text-xs text-gray-500">
-                                User's Browser (Local Network)
-                            </div>
-                            <div className="absolute top-2 right-2 text-xs text-gray-500">
-                                your-service.run.app
-                            </div>
-                            <div className="absolute bottom-2 left-1/3 text-xs text-gray-500">
-                                identitytoolkit.googleapis.com
-                            </div>
-                            <div className="absolute bottom-2 right-2 text-xs text-gray-500">
-                                accounts.google.com
-                            </div>
                         </div>
 
                         {/* Step details */}
